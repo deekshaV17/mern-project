@@ -1,20 +1,21 @@
-import User from '../models/user.model';
 import jwt from 'jsonwebtoken';
 import expressJwt from 'express-jwt';
-import config from './../../config/config';
+
+import User from '../models/user.model';
+import config from '../../config/config';
 
 const signin = (req, res) => {
   User.findOne({
-    "email": req.body.email
+    'email': req.body.email
   }, (err, user) => {
     if (err || !user)
       return res.status('401').json({
-        error: "User not found"
+        error: 'User not found'
       });
 
     if (!user.authenticate(req.body.password)) {
       return res.status('401').send({
-        error: "Email and password don't match."
+        error: 'Email and password don\'t match.'
       })
     }
 
@@ -22,7 +23,7 @@ const signin = (req, res) => {
       _id: user._id
     }, config.jwtSecret);
 
-    res.cookie("t", token, {
+    res.cookie('t', token, {
       expire: new Date() + 9999
     });
 
@@ -33,9 +34,9 @@ const signin = (req, res) => {
   })
 };
 const signout = (req, res) => {
-  res.clearCookie("t");
+  res.clearCookie('t');
   return res.status('200').json({
-    message: "signed out"
+    message: 'signed out'
   })
 };
 const requireSignin = expressJwt({
@@ -47,7 +48,7 @@ const hasAuthorization = (req, res) => {
   const authorized = req.profile && req.auth && req.profile._id === req.auth._id;
   if (!(authorized)) {
     return res.status('403').json({
-      error: "User is not authorized"
+      error: 'User is not authorized'
     })
   }
   next();

@@ -3,8 +3,8 @@ const webpack = require('webpack');
 const CURRENT_WORKING_DIR = process.cwd();
 
 const config = {
-  name: "browser",
-  mode: "development",
+  name: 'browser',
+  mode: 'development',
   devtool: 'eval-source-map',
   entry: [
     'react-hot-loader/patch',
@@ -24,6 +24,10 @@ const config = {
         use: [
           'babel-loader'
         ]
+      },
+      {
+        test: /\.(ttf|eot|svg|gif|jpg|png)(\?[\s\S]+)?$/,
+        use: 'file-loader'
       }
     ]
   },

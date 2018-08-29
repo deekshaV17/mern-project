@@ -1,5 +1,7 @@
-import React from 'react'
-import { render } from 'react-dom'
-import HelloWorld from './HelloWorld'
+import React from 'react';
 
-render(<HelloWorld/>, document.getElementById('root'))
+import { hydrate } from 'react-dom';
+
+import App from './App';
+
+hydrate(<App />, document.getElementById('root'));

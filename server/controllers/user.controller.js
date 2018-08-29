@@ -1,5 +1,6 @@
-import User from '../models/user.model';
 import _ from 'lodash';
+
+import User from '../models/user.model';
 import errorHandler from '../helpers/dbErrorHandler';
 
 const create = (req, res, next) => {
@@ -11,7 +12,7 @@ const create = (req, res, next) => {
       })
     }
     res.status(200).json({
-      message: "Successfully signed up!"
+      message: 'Successfully signed up!'
     })
   })
 };
@@ -24,14 +25,14 @@ const list = (req, res) => {
       })
     }
     res.json(users)
-  }).select('name email updated created');
+  }).select('name email updated created password');
 };
 
 const userByID = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user)
       return res.status('400').json({
-        error: "User not found"
+        error: 'User not found'
       });
     req.profile = user;
     next()
