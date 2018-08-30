@@ -1,28 +1,24 @@
-import express from 'express';
 import path from 'path';
+import cors from 'cors';
+import React from 'react';
+import helmet from 'helmet';
+import express from 'express';
+import compress from 'compression';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import compress from 'compression';
-import cors from 'cors';
-import helmet from 'helmet';
-import Template from './../template';
-import userRoutes from './routes/user.routes';
-import authRoutes from './routes/auth.routes';
-
-// modules for server side rendering
-import React from 'react';
 import ReactDOMServer from "react-dom/server";
-import MainRouter from './../client/MainRouter';
 import StaticRouter from 'react-router-dom/StaticRouter';
 
 import { SheetsRegistry } from 'react-jss/lib/jss';
 import JssProvider from 'react-jss/lib/JssProvider';
-import { MuiThemeProvider, createMuiTheme, createGenerateClassName } from '@material-ui/core/styles';
 import { indigo, pink } from '@material-ui/core/colors';
-//end
+import { MuiThemeProvider, createMuiTheme, createGenerateClassName } from '@material-ui/core/styles';
 
-//comment out before building for production
 import devBundle from './devBundle';
+import Template from './../template';
+import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes';
+import MainRouter from './../client/MainRouter';
 
 const CURRENT_WORKING_DIR = process.cwd();
 const app = express();
@@ -35,14 +31,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compress());
-// secure apps by setting various HTTP headers
 app.use(helmet());
-// enable CORS - Cross Origin Resource Sharing
 app.use(cors());
 
 app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')));
 
-// mount routes
 app.use('/', userRoutes);
 app.use('/', authRoutes);
 
@@ -68,9 +61,8 @@ app.get('*', (req, res) => {
     },
   });
   const generateClassName = createGenerateClassName();
-  const context = {};
   console.log('context', context);
-  const markup = ReactDOMServer.renderToNodeStream(
+  const markup = ReactDOMServer.renderToString(
     <StaticRouter location={req.url} context={context}>
       <JssProvider registry={sheetsRegistry} generateClassName={generateClassName}>
         <MuiThemeProvider theme={theme} sheetsManager={new Map()}>
@@ -79,9 +71,7 @@ app.get('*', (req, res) => {
       </JssProvider>
     </StaticRouter>
   );
-  console.log('markup', markup);
   if (context.url) {
-    console.log('url', context.url);
     return res.redirect(303, context.url)
   }
   const css = sheetsRegistry.toString();
@@ -89,7 +79,6 @@ app.get('*', (req, res) => {
     markup: markup,
     css: css
   }))
-  // res.status(200).send('fgjf');
 });
 
 // Catch unauthorised errors
