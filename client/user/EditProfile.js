@@ -49,6 +49,7 @@ class EditProfile extends Component {
       name: '',
       email: '',
       password: '',
+      photo: '',
       redirectToProfile: false,
       error: ''
     };
@@ -56,6 +57,8 @@ class EditProfile extends Component {
   }
 
   componentDidMount() {
+
+    this.userData = new FormData();
     const jwt = auth.isAuthenticated();
     read({
       userId: this.match.params.userId
@@ -72,7 +75,8 @@ class EditProfile extends Component {
     const user = {
       name: this.state.name || undefined,
       email: this.state.email || undefined,
-      password: this.state.password || undefined
+      password: this.state.password || undefined,
+      about: this.state.about || undefined
     };
     update({
       userId: this.match.params.userId
@@ -86,9 +90,15 @@ class EditProfile extends Component {
       }
     })
   };
+
   handleChange = name => event => {
-    this.setState({[name]: event.target.value})
+    const value = name === 'photo'
+      ? event.target.files[0]
+      : event.target.value;
+    this.userData.set(name, value);
+    this.setState({ [name]: value })
   };
+
   render() {
     const {classes} = this.props;
     if (this.state.redirectToProfile) {
@@ -100,9 +110,54 @@ class EditProfile extends Component {
           <Typography type="headline" component="h2" className={classes.title}>
             Edit Profile
           </Typography>
-          <TextField id="name" label="Name" className={classes.textField} value={this.state.name} onChange={this.handleChange('name')} margin="normal"/><br/>
-          <TextField id="email" type="email" label="Email" className={classes.textField} value={this.state.email} onChange={this.handleChange('email')} margin="normal"/><br/>
-          <TextField id="password" type="password" label="Password" className={classes.textField} value={this.state.password} onChange={this.handleChange('password')} margin="normal"/>
+          <br/>
+          <input accept="image/*" type="file"
+                 onChange={this.handleChange('photo')}
+                 style={{display:'none'}}
+                 id="icon-button-file"
+          />
+          <TextField
+            id="name"
+            label="Name"
+            className={classes.textField}
+            value={this.state.name}
+            onChange={this.handleChange('name')}
+            margin="normal"
+          />
+          <label htmlFor="icon-button-file">
+            <Button variant="raised" color="default" component="span">
+              Upload <FileUpload/>
+            </Button>
+          </label>
+          <span className={classes.filename}>{this.state.photo ? this.state.photo.name : ''}</span><br/>
+          <TextField
+            id="multiline-flexible"
+            label="About"
+            multiline
+            rows="2"
+            value={this.state.about}
+            onChange={this.handleChange('about')}
+          />
+          <br />
+          <TextField
+            id="email"
+            type="email"
+            label="Email"
+            className={classes.textField}
+            value={this.state.email}
+            onChange={this.handleChange('email')}
+            margin="normal"
+          />
+          <br/>
+          <TextField
+            id="password"
+            type="password"
+            label="Password"
+            className={classes.textField}
+            value={this.state.password}
+            onChange={this.handleChange('password')}
+            margin="normal"
+          />
           <br/> {
           this.state.error && (<Typography component="p" color="error">
             <Icon color="error" className={classes.error}>error</Icon>
